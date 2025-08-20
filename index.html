@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Đề Cương Ôn Tập Nghiệp Vụ Hướng Dẫn Viên Du Lịch Quốc Tế</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .quiz-container {
+            margin-top: 20px;
+        }
+        .question-counter {
+            text-align: right;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            background: #ecf0f1;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .options li:hover {
+            background: #dce1e4;
+        }
+        .options li.correct {
+            background: #2ecc71;
+            color: #fff;
+            pointer-events: none; /* Disable clicking after correct answer */
+        }
+        .options li.incorrect {
+            background: #e74c3c;
+            color: #fff;
+            pointer-events: none;
+        }
+        .options li input[type="radio"] {
+            margin-right: 10px;
+            display: none;
+        }
+        .options li label {
+            cursor: pointer;
+            display: block;
+        }
+        .feedback {
+            text-align: center;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        .next-btn {
+            display: none;
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Đề Cương Ôn Tập</h1>
+        <div class="quiz-container">
+            <div class="question-counter"></div>
+            <div class="question-text"></div>
+            <ul class="options"></ul>
+            <div class="feedback"></div>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            { question: "Nước Việt Nam nằm ở", options: ["A. bán đảo Trung Ân, khu vực cận nhiệt đới.", "B. rìa phía đông bán đảo Đông Dương, gần trung tâm Đông Nam Á.", "C. phía đông Thái Bình Dương, khu vực kinh tế sôi động của thế giới.", "D. rìa phía đông châu Á, khu vực ôn đới."], answer: "B" },
+            { question: "Lãnh thổ Việt Nam là khối thống nhất và toàn vẹn, bao gồm", options: ["A. vùng đất, vùng biển, vùng trời.", "B. vùng đất, vùng biển, vùng núi.", "C. vùng đất, hải đảo, thềm lục địa.", "D. vùng đất liền, hải đảo, vùng trời."], answer: "A" },
+            { question: "Vùng biển thuộc chủ quyền nước ta có diện tích là", options: ["A. 331,212km2.", "B. 0,3 triệu km2.", "C. 1 triệu km2.", "D. 3,447 triệu km2."], answer: "C" },
+            { question: "Các cảng biển của nước ta chủ yếu tập trung ở", options: ["A. Đồng bằng sông Hồng và Trung Bộ.", "B. Duyên hải miền Trung và Đông Nam Bộ.", "C. Đồng bằng sông Hồng và Đông Nam Bộ.", "D. Trung Bộ và Đồng bằng sông Cửu Long."], answer: "B" },
+            { question: "Quốc lộ nổi tiếng nối thành phố Đông Hà với cửa khẩu Lao Bảo là", options: ["A. 1.", "B. 5.", "C. 7.", "D. 9."], answer: "D" },
+            { question: "Năm 2879 TCN là năm", options: ["A. Hùng Vương lên ngôi.", "B. Lạc Long Quân sinh ra.", "C. Bác Hồ đọc Tuyên ngôn Độc lập.", "D. Cả 3 đáp án trên."], answer: "A" },
+            { question: "Lộc Tục là ai?", options: ["A. Cha của Lạc Long Quân.", "B. Ông của Lạc Long Quân.", "C. Vua Hùng thứ 1.", "D. Vua Hùng thứ 18."], answer: "A" },
+            { question: "Sùng Lãm là tên của", options: ["A. Lộc Tục.", "B. Âu Cơ.", "C. Lạc Long Quân.", "D. Hùng Vương."], answer: "C" },
+            { question: "Lạc Long Quân và Âu Cơ sinh bọc trứng, nở ra được", options: ["A. 100 con trai.", "B. 100 con gái.", "C. 50 con trai, 50 con gái.", "D. 12 con trai."], answer: "A" },
+            { question: "100 con của Lạc Long Quân và Âu Cơ mang họ ai?", options: ["A. Họ mẹ.", "B. Họ cha.", "C. Họ Lạc.", "D. Họ Âu."], answer: "B" },
+            { question: "Phương đông cổ đại quan niệm văn hóa là", options: ["A. Văn học.", "B. Khoa học.", "C. Nghệ thuật.", "D. Giáo dục."], answer: "D" },
+            { question: "Đàn Chapi có ở vùng văn hóa", options: ["A. Nam Bộ.", "B. Miền Bắc.", "C. Miền Trung.", "D. Tây Nguyên."], answer: "D" },
+            { question: "Định vị văn hóa dựa vào", options: ["A. Trục tọa độ K-C-T.", "B. Trục tọa độ X-Y-Z.", "C. Trục tọa độ T-P-T.", "D. Trục tọa độ A-B-C."], answer: "A" },
+            { question: "Nhận diện văn hóa dựa vào", options: ["A. Tính hệ thống, tính giá trị, tính lịch sử, tính nhân sinh.", "B. Tính giá trị, tính tự nhiên, tính nhân sinh, tính lịch sử.", "C. Tính lịch sử, tính con người, tính hệ thống.", "D. Cả 3 đáp án đều sai."], answer: "A" },
+            { question: "“Áo dài thuộc", options: ["A. Văn hiến.", "B. Văn minh.", "C. Văn vật.", "D. Văn hóa."], answer: "C" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, hoạt động du lịch được hiểu như thế nào?", options: ["A. Hoạt động của khách du lịch, tổ chức, cá nhân kinh doanh du lịch.", "B. Hoạt động tham quan, nghỉ dưỡng.", "C. Hoạt động giải trí, tìm hiểu, khám phá tài nguyên du lịch.", "D. Hoạt động du lịch là hoạt động của khách du lịch, tổ chức, cá nhân kinh doanh du lịch và cơ quan, tổ chức, cá nhân, cộng đồng dân cư có liên quan đến du lịch."], answer: "D" },
+            { question: "Hướng dẫn viên du lịch hoạt động không đúng phạm vi hành nghề theo quy định (ví dụ: hướng dẫn viên nội địa dẫn đoàn khách quốc tế) sẽ bị phạt tiền ở mức nào?", options: ["A. Từ 5.000.000 đồng đến 10.000.000 đồng.", "B. Từ 10.000.000 đồng đến 15.000.000 đồng.", "C. Từ 15.000.000 đồng đến 20.000.000 đồng.", "D. Từ 20.000.000 đồng đến 30.000.000 đồng."], answer: "A" },
+            { question: "Theo quy định tại Luật Du lịch, giấy phép kinh doanh lữ hành quốc tế được cấp theo phạm vi kinh doanh, bao gồm?", options: ["A. Kinh doanh lữ hành đối với khách du lịch vào Việt Nam.", "B. Kinh doanh lữ hành đối với khách du lịch ra nước ngoài.", "C. Kinh doanh lữ hành đối với khách du lịch vào Việt Nam và khách du lịch ra nước ngoài.", "D. Cả 3 phương án còn lại."], answer: "D" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, du lịch văn hóa được hiểu như thế nào?", options: ["A. Là loại hình du lịch được phát triển trên cơ sở khai thác giá trị văn hóa.", "B. Góp phần bảo tồn và phát huy giá trị văn hóa truyền thống.", "C. Tôn vinh giá trị văn hóa mới của nhân loại.", "D. Du lịch văn hóa là loại hình du lịch được phát triển trên cơ sở khai thác giá trị văn hóa, góp phần bảo tồn và phát huy giá trị văn hóa truyền thống, tôn vinh giá trị văn hóa mới của nhân loại."], answer: "D" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, du lịch được hiểu như thế nào?", options: ["A. Hoạt động có liên quan đến chuyến đi của con người.", "B. Hoạt động ngoài nơi cư trú thường xuyên.", "C. Thời gian không quá 01 năm liên tục nhằm đáp ứng nhu cầu tham quan, nghỉ dưỡng, giải trí.", "D. Du lịch là các hoạt động có liên quan đến chuyến đi của con người ngoài nơi cư trú thường xuyên trong thời gian không quá 01 năm liên tục nhằm đáp ứng nhu cầu tham quan, nghỉ dưỡng, giải trí, tìm hiểu, khám phá tài nguyên du lịch hoặc kết hợp với mục đích hợp pháp khác."], answer: "D" },
+            { question: "Công trình nào có thời điểm xây dựng xưa nhất thuộc các nền văn minh lớn của nhân loại?", options: ["A. Vườn treo Babylon.", "B. Kim tự tháp Kheops.", "C. Đền Parthenon.", "D. Vạn lý trường thành."], answer: "B" },
+            { question: "Nền văn minh nào gắn liền với con sông Euphrates?", options: ["A. Văn minh Ai Cập.", "B. Văn minh Hy Lạp.", "C. Văn minh Lưỡng Hà.", "D. Văn minh La Mã."], answer: "C" },
+            { question: "Vườn treo Babylon là một trong những công trình đỉnh cao thể hiện văn minh nhân loại, được liệt vào hàng kì quan cổ đại. Nó được xây dựng vào khoản thời gian nào?", options: ["A. 1000 năm TCN.", "B. 800 năm TCN.", "C. 600 năm TCN.", "D. 400 năm TCN."], answer: "C" },
+            { question: "Đất nước I Rắc được xem là trung tâm của nên văn minh nào trong quá khứ?", options: ["A. Văn minh Hy Lạp.", "B. Văn minh Ai Cập.", "C. Văn minh Lưỡng Hà.", "D. Văn minh Ấn Độ."], answer: "C" },
+            { question: "Sông Nin (Nile river) gắn liền với nền văn minh Ai Cập cổ đại. Trong tiếng Ai Cập cổ, nó có nghĩa là gì?", options: ["A. Sông cha.", "B. Sông tổ.", "C. Sông bạn.", "D. Sông mẹ."], answer: "D" },
+            { question: "Mục đích nào sau đây là mục đích của du lịch?", options: ["A. Đi chữa bệnh.", "B. Đi làm việc.", "C. Đi học.", "D. Đi làm nghĩa vụ quân sự."], answer: "A" },
+            { question: "Hành vi nào sau đây thuộc về khách thăm viếng?", options: ["A. Đi tham quan.", "B. Đi nghỉ dưỡng.", "C. Đi về quê.", "D. Đi công tác."], answer: "C" },
+            { question: "Khách tham quan là khách", options: ["A. đi du lịch trong ngày.", "B. đi du lịch dài ngày.", "C. đi du lịch trong ngày.", "D. ở lại qua đêm."], answer: "C" },
+            { question: "Khách du lịch từ Mỹ đến Việt Nam được gọi là khách du lịch...", options: ["A. Inbound.", "B. Outbound.", "C. Quốc tế.", "D. Nội địa."], answer: "A" },
+            { question: "Người đầu tiên phát hiện và đề xuất xây dựng thành phố Đà Lạt là ai?", options: ["A. Louis Pasteur.", "B. Alexandre Yersin.", "C. Hồ Chí Minh.", "D. Ngô Đình Diệm."], answer: "B" },
+            { question: "Trong bốn cù lao Long, Lân, Quy, Phụng nằm trên sông Tiền, cù lao nào có diện tích lớn nhất?", options: ["A. Cù lao Long.", "B. Cù lao Lân.", "C. Cù lao Quy.", "D. Cù lao Phụng."], answer: "A" },
+            { question: "Công trình tôn giáo nào nằm cạnh hồ Tuyền Lâm?", options: ["A. Thiền Viện Trúc Lâm.", "B. Chùa Linh Phước.", "C. Nhà thờ Con Gà.", "D. Lăng Vua Bảo Đại."], answer: "A" },
+            { question: "Chùa Tây An Cổ tọa lạc ở chân ngọn núi nào?", options: ["A. Núi Vọng Phu.", "B. Núi Cấm.", "C. Núi Sam.", "D. Núi Bà Rá."], answer: "C" },
+            { question: "Tâm lý là gì?", options: ["A. Những hiện tượng tinh thần nảy sinh và diễn biến ở ngoài não.", "B. Những hiện tượng tinh thần nảy sinh và diễn biến ở trong cơ thể.", "C. Những hiện tượng tinh thần nảy sinh và diễn biến ở trong não.", "D. Cả 3 đáp án đều sai."], answer: "C" },
+            { question: "Những hiện tượng tâm lý diễn ra trong một khoảng thời gian ngắn, có mở đầu diễn biến kết thúc rõ ràng đó là", options: ["A. Thuộc tính tâm lý.", "B. Trạng thái tâm lý.", "C. Quá trình tâm lý.", "D. Tất cả đều đúng."], answer: "C" },
+            { question: "Trong các phát biểu sau, phát biểu nào đúng nhất?", options: ["A. Tâm lý người là sự phản ánh hiện thực khách quan.", "B. Tâm lý người là sự phản ánh hiện thực khách quan thông qua sự vật.", "C. Tâm lý người là sự phản ánh hiện thực khách quan thông qua não.", "D. Cả 3 đáp án đều đúng."], answer: "D" },
+            { question: "Tâm lý học xã hội có vai trò gì trong du lịch?", options: ["A. Đưa ra những phương pháp nâng cao chất lượng dịch vụ du lịch.", "B. Đưa ra những nguyên tắc giao tiếp trong du lịch.", "C. Giúp cho các nhà quản lý du lịch nắm bắt và điều chỉnh tâm lý du khách.", "D. Tất cả đều đúng."], answer: "D" },
+            { question: "Giao tiếp du lịch là", options: ["A. Tạo nên sự tiếp xúc giữa khách du lịch và người phục vụ du lịch.", "B. Tạo nên sự hiểu biết lẫn nhau giữa khách du lịch và người phục vụ du lịch.", "C. Tạo nên cảm xúc, hiểu biết lẫn nhau giữa khách du lịch và người phục vụ du lịch.", "D. Cả 3 đáp án đều sai."], answer: "C" },
+            { question: "Phát biểu nào sau đây chưa đúng về giao tiếp trong du lịch", options: ["A. Giao tiếp trong thời gian ngắn.", "B. Giao tiếp trong thời gian dài.", "C. Giao tiếp trong thời gian tùy thuộc vào loại hình du lịch.", "D. Cả 3 đáp án đều sai."], answer: "B" },
+            { question: "Quá trình giao tiếp du lịch có mấy giai đoạn", options: ["A. 2.", "B. 3.", "C. 4.", "D. 5."], answer: "C" },
+            { question: "Chức năng cơ bản của giai đoạn mở đầu trong giao tiếp là", options: ["A. Nhận thức (cảm tính).", "B. Nhận thức (lý tính).", "C. Giao tiếp.", "D. Tất cả đều sai."], answer: "A" },
+            { question: "HDV khi nhận tour tại công ty, phần việc nào là quan trọng nhất?", options: ["A. Kiểm tra hành lý.", "B. Kiểm tra sức khỏe.", "C. Kiểm tra chương trình và bảng chi phí tour.", "D. Cả 3 đáp án đều đúng."], answer: "C" },
+            { question: "Khi hẹn đón các nhóm khách lẻ ở thành phố, HDV hẹn đón trước sau như thế nào?", options: ["A. Theo lộ trình thông thường xe rời thành phố, xa đón sau.", "B. Theo lộ trình thông thường xe rời thành phố, gần đón trước.", "C. Theo lộ trình thông thường xe rời thành phố, xa đón trước.", "D. Cả 3 đáp án đều sai."], answer: "C" },
+            { question: "Khi nhận tour tại công ty, HDV hẹn đón khách, HDV gọi điện thoại sẽ trao đổi những thông tin gì theo thứ tự?", options: ["A. Tên HDV, tên công ty, số điện thoại HDV, giờ và điểm đón khách, căn dặn khách.", "B. Tên công ty, tên HDV, số điện thoại HDV, giờ và điểm đón khách, căn dặn khách.", "C. Giờ và điểm đón khách, tên công ty, tên HDV, số điện thoại HDV, căn dặn khách.", "D. Tên công ty, tên HDV, giờ và điểm đón khách, số điện thoại HDV, căn dặn khách."], answer: "D" },
+            { question: "Nhận tour tại công ty xong, HDV chuẩn bị những gì để đi tour?", options: ["A. Hành lý.", "B. Kiến thức.", "C. Sức khỏe.", "D. Hành lý, kiến thức, sức khỏe."], answer: "D" },
+            { question: "Gãy xương kín không có đặc điểm nào sau đây?", options: ["A. Ô xương gãy thông với bên ngoài.", "B. Gãy xương không có tổn thương da.", "C. Gãy xương không có tổn thương cơ.", "D. Cả 3 đáp án đều đúng."], answer: "A" },
+            { question: "Khi cần thiết phải gọi xe cấp cứu, cần nói rõ", options: ["A. tên người bị nạn.", "B. tính chất tai nạn.", "C. địa chỉ người bị nạn.", "D. tên người gọi."], answer: "B" },
+            { question: "Nguyên tắc cố định xương ống tay gãy là", options: ["A. cố định một đầu khớp xương gãy.", "B. cố định hai đầu khớp xương gãy.", "C. cố định một đầu xương gãy.", "D. cố định hai đầu xương gãy."], answer: "B" },
+            { question: "Lợi ích căn bản và lâu dài mà giao lưu văn hóa đem lại là gì?", options: ["A. Thúc đẩy sự phát triển kinh tế.", "B. Thúc đẩy sự phát triển của mỗi nền văn hóa.", "C. Thúc đẩy sự phát triển của xã hội.", "D. Thúc đẩy sự phát triển của con người."], answer: "B" },
+            { question: "Sushi và sake là nét văn hóa ẩm thực nổi tiếng của quốc gia nào?", options: ["A. Việt Nam.", "B. Nhật Bản.", "C. Trung Quốc.", "D. Hàn Quốc."], answer: "B" },
+            { question: "Mehndi là tên gọi của hình thức nghệ thuật Ấn Độ dùng Henna vẽ lên chất liệu nào?", options: ["A. Giấy.", "B. Vải.", "C. Người.", "D. Đá."], answer: "C" },
+            { question: "Trong sự giao lưu rộng rãi với các nền văn hóa Đông Tây, văn hóa Việt Nam chịu ảnh hưởng sâu đậm của nền văn hóa nào?", options: ["A. Trung Hoa.", "B. Ấn Độ.", "C. Nhật Bản.", "D. Hàn Quốc."], answer: "A" },
+            { question: "Người nước ngoài nhập cảnh vào Việt Nam với mục đích du lịch, được cấp thị thực có giá trị sử dụng", options: ["A. một lần.", "B. nhiều lần.", "C. một lần hoặc nhiều lần.", "D. một lần và nhiều lần."], answer: "C" },
+            { question: "Người nước ngoài nhập cảnh vào Việt Nam với mục đích du lịch, được cấp thị thực du lịch và loại thị thực này", options: ["A. không được phép chuyển đổi mục đích.", "B. được phép chuyển đổi mục đích.", "C. được phép chuyển đổi mục đích sau khi được sự đồng ý của cơ quan quản lý xuất nhập cảnh.", "D. Cả 3 đáp án đều sai."], answer: "A" },
+            { question: "Thị thực du lịch do cơ quan quản lý xuất nhập cảnh Việt Nam cấp có ký hiệu là", options: ["A. DL.", "B. DN.", "C. TT.", "D. VR."], answer: "A" },
+            { question: "Thị thực du lịch do cơ quan quản lý xuất nhập cảnh Việt Nam cấp có thời hạn không quá", options: ["A. 1 tháng.", "B. 2 tháng.", "C. 3 tháng.", "D. 6 tháng."], answer: "C" },
+            { question: "Mục tiêu của môn học lễ tân ngoại giao?", options: ["A. Trang bị cho người học những kiến thức và các yêu cầu cơ bản đối với lễ tân trong giao tiếp đối ngoại.", "B. Trang bị cho người học những kiến thức về du lịch.", "C. Trang bị cho người học những kiến thức về văn hóa.", "D. Trang bị cho người học những kiến thức về tâm lý."], answer: "A" },
+            { question: "Việt Nam và Hoa kỳ bình thường hóa quan hệ vào năm nào?", options: ["A. 1994.", "B. 1995.", "C. 1996.", "D. 1997."], answer: "B" },
+            { question: "Nguyên tắc nào SAI trong khi thực hiện giới thiệu", options: ["A. Giới thiệu người nữ cho người nam.", "B. Giới thiệu người ít tuổi cho người nhiều tuổi.", "C. Giới thiệu người có chức vụ thấp cho người có chức vụ cao.", "D. Giới thiệu người có chức vụ cao cho người có chức vụ thấp."], answer: "A" },
+            { question: "Đối với vị trí ngồi trên ô tô (nhìn theo hướng nhìn của người ngồi trong xe), chủ nhà ngồi ở vị trí nào trên ôtô?", options: ["A. Ngồi bên phải ghế sau xe (chếch với lái xe).", "B. Ngồi bên trái ghế sau xe (chếch với lái xe).", "C. Ngồi bên cạnh lái xe.", "D. Ngồi sau lưng lái xe."], answer: "A" },
+            { question: "Vườn quốc gia được thành lập đầu tiên tại nước ta là", options: ["A. Cát Bà.", "B. Côn Đảo.", "C. Cúc Phương.", "D. Bạch Mã."], answer: "C" },
+            { question: "Số lượng huyện đảo ở nước ta tính đến năm 2006 là", options: ["A. 9.", "B. 10.", "C. 11.", "D. 12."], answer: "D" },
+            { question: "Lễ đâm trâu và hát trường ca là các hoạt động thường diễn ra ở", options: ["A. Đồng bằng sông Hồng.", "B. Tây Nguyên.", "C. Miền Bắc.", "D. Miền Trung."], answer: "B" },
+            { question: "Hai vịnh biển có diện tích lớn nhất nước ta là", options: ["A. Vịnh Bắc Bộ và vịnh Thái Lan.", "B. Vịnh Bắc Bộ và vịnh Cam Ranh.", "C. Vịnh Bắc Bộ và vịnh Đà Nẵng.", "D. Vịnh Bắc Bộ và vịnh Nha Trang."], answer: "A" },
+            { question: "Hai địa điểm có khí hậu mát mẻ quanh năm và có giá trị nghỉ dưỡng cao là", options: ["A. Sa Pa và Mộc Châu.", "B. Đà Lạt và Sa Pa.", "C. Đà Lạt và Nha Trang.", "D. Đà Lạt và Phan Thiết."], answer: "B" },
+            { question: "Tương truyền, Thánh Gióng là người thời vua Hùng thứ…", options: ["A. 5.", "B. 6.", "C. 7.", "D. 8."], answer: "B" },
+            { question: "Mai An Tiêm theo truyền thuyết là", options: ["A. con ruột vua Hùng.", "B. con nuôi vua Hùng.", "C. cháu vua Hùng.", "D. Cả 3 đáp án đều sai."], answer: "B" },
+            { question: "Có bao nhiêu đền thờ vua Hùng ở Việt Nam?", options: ["A. 1.", "B. 10.", "C. 18.", "D. Rất nhiều (không thể thống kê được hết)."], answer: "D" },
+            { question: "Tương truyền mộ vua Hùng tại Đền Hùng (Phú Thọ) là của vua nào?", options: ["A. Vua Hùng thứ 1.", "B. Vua Hùng thứ 10.", "C. Vua Hùng thứ 18.", "D. Vua Hùng thứ 18."], answer: "D" },
+            { question: "“Các vua Hùng đã có công dựng nước, Bác cháu ta phải cùng nhau giữ lấy nước” là câu Bác Hồ nói tại Đền Hùng (Phú Thọ) vào năm nào?", options: ["A. 1953.", "B. 1954.", "C. 1955.", "D. 1956."], answer: "B" },
+            { question: "“Tinh thần yêu nước” thuộc", options: ["A. Văn vật.", "B. Văn hiến.", "C. Văn minh.", "D. Văn hóa."], answer: "B" },
+            { question: "Cổ vật trong khu Hoàng thành Thăng Long thuộc", options: ["A. Văn hiến.", "B. Văn minh.", "C. Văn vật.", "D. Văn hóa."], answer: "C" },
+            { question: "Smartphone thuộc", options: ["A. Văn hiến.", "B. Văn vật.", "C. Văn hóa.", "D. Văn minh."], answer: "D" },
+            { question: "Cấu trúc văn hóa của UNESSCO gồm", options: ["A. Văn hóa vật thể.", "B. Văn hóa vật thể, văn hóa phi vật thể.", "C. Văn hóa vật thể, văn hóa tinh thần.", "D. Văn hóa vật thể, văn hóa phi vật thể, văn hóa tinh thần."], answer: "B" },
+            { question: "Văn hóa nhận thức trong cấu trúc văn hóa của Trần Ngọc Thêm là nhận thức về", options: ["A. Tự nhiên.", "B. Xã hội.", "C. Tự nhiên & xã hội.", "D. Tự nhiên & con người."], answer: "C" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, cơ sở lưu trú du lịch gồm những loại hình nào?", options: ["A. Khách sạn, làng du lịch.", "B. Biệt thự, căn hộ du lịch.", "C. Tàu thủy, tàu biển.", "D. Cả 3 phương án còn lại."], answer: "D" },
+            { question: "Theo Luật du lịch năm 2017, điều kiện công nhận là điểm du lịch là gì?", options: ["A. Có tài nguyên du lịch, có ranh giới xác định trên bản đồ.", "B. Có kết cấu hạ tầng, dịch vụ đáp ứng nhu cầu của khách du lịch.", "C. Có Ban quản lý hoặc tổ chức, cá nhân được giao quản lý.", "D. Tất cả các đáp án trên."], answer: "D" },
+            { question: "Trách nhiệm của bên giao đại lý lữ hành được quy định như thế nào theo quy định tại Luật Du lịch năm 2017?", options: ["A. Hướng dẫn bên nhận đại lý các nội dung của chương trình du lịch.", "B. Cung cấp thông tin về chương trình du lịch, giá bán chương trình du lịch.", "C. Cả 3 phương án còn lại.", "D. Chịu trách nhiệm về chất lượng chương trình du lịch."], answer: "B" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, các dịch vụ du lịch khác bao gồm", options: ["A. Vận chuyển khách du lịch.", "B. Dịch vụ ăn uống, vui chơi giải trí.", "C. Dịch vụ thể thao, văn hóa.", "D. Cả 3 đáp án còn lại."], answer: "D" },
+            { question: "Theo quy định tại Luật Du lịch năm 2017, khách du lịch được hiểu như thế nào?", options: ["A. Khách du lịch là người đi du lịch hoặc kết hợp đi du lịch, trừ trường hợp đi học, làm việc để nhận thu nhập ở nơi đến.", "B. Khách du lịch là người đi du lịch, bao gồm người đi học, làm việc để nhận thu nhập ở nơi đến.", "C. Khách du lịch là người đi du lịch trong thời gian không quá 01 năm liên tục.", "D. Khách du lịch là người đi du lịch hoặc kết hợp đi du lịch."], answer: "A" },
+            { question: "Nền văn minh Ai Cập cổ đại bắt đầu thời kì Tảo vương quốc vào thiên niên kỉ thứ mấy TCN?", options: ["A. Thứ 4.", "B. Thứ 3.", "C. Thứ 2.", "D. Thứ 1."], answer: "B" },
+            { question: "Kim tự tháp Kheops trên cao nguyên Ghiza là ngôi mộ của Pharaon Kheops, kim tự tháp vĩ đại nhất có chiều cao nguyên thủy khoảng bao nhiêu mét?", options: ["A. 130 m.", "B. 140 m.", "C. 150 m.", "D. 160 m."], answer: "C" },
+            { question: "Tượng Nhân Sư được xây dựng trước kim tự tháp của Pharaon nào trong lịch sử văn minh Ai Cập?", options: ["A. Pharaon Kheops.", "B. Pharaon Khafra.", "C. Pharaon Ramses II.", "D. Pharaon Tutankhamun."], answer: "B" },
+            { question: "Vị Pharaon nào được xem là đại đế của các triều đại Ai Cập cổ đại, xác ướp của ông cũng là nổi tiếng nhất?", options: ["A. Pharaon Kheops.", "B. Pharaon Khafra.", "C. Pharaon Ramses II.", "D. Pharaon Tutankhamun."], answer: "C" },
+            { question: "Lực lượng lao động chính để xây dựng nên các kim tự tháp ở Ai Cập là ai?", options: ["A. Nô lệ.", "B. Dân chúng bị cưỡng bức.", "C. Tù binh.", "D. Công nhân được thuê mướn."], answer: "D" },
+            { question: "Khách Du lịch Outbound là khách …", options: ["A. đi du lịch trong nước.", "B. đi du lịch nước ngoài.", "C. đi du lịch theo nhóm.", "D. đi du lịch tự túc."], answer: "B" },
+            { question: "Một Việt kiều về quê ăn tết được gọi là gì?", options: ["A. Khách du lịch nội địa.", "B. Khách du lịch quốc tế.", "C. Khách thăm viếng.", "D. Khách du lịch inbound."], answer: "C" },
+            { question: "Sản phẩm được coi là sản phẩm du lịch khi …", options: ["A. Có giá trị vật chất.", "B. Bán cho du khách.", "C. Có giá trị tinh thần.", "D. Cả 3 đáp án đều đúng."], answer: "B" },
+            { question: "Sản phẩm du lịch được cung cấp bởi…", options: ["A. Cá nhân.", "B. Tổ chức.", "C. Đơn vị kinh doanh du lịch.", "D. Tất cả đều đúng."], answer: "C" },
+            { question: "Tứ giác Long Xuyên được định hình bởi các địa danh", options: ["A. Châu Đốc, Hà Tiên, Rạch Giá, Long Xuyên.", "B. Châu Đốc, Hà Tiên, Rạch Giá, Cần Thơ.", "C. Châu Đốc, Hà Tiên, Cần Thơ, Long Xuyên.", "D. Cả 3 đáp án đều sai."], answer: "A" },
+            { question: "Thắng cảnh hòn Phụ Tử nằm ở địa phận nào của tỉnh Kiên Giang (cũ)?", options: ["A. Hà Tiên.", "B. Phú Quốc.", "C. Rạch Giá.", "D. Kiên Lương."], answer: "D" },
+            { question: "Vùng Tây Nam Bộ có bao nhiêu tỉnh thành tính đến trước ngày 01/07/2025?", options: ["A. 13 tỉnh, thành.", "B. 14 tỉnh, thành.", "C. 15 tỉnh, thành.", "D. 16 tỉnh, thành."], answer: "A" },
+            { question: "Thác nước nào tên gọi có nghĩa là “dưới lá có nước”?", options: ["A. Thác Datanla.", "B. Thác Prenn.", "C. Thác Camly.", "D. Thác Pongour."], answer: "C" },
+            { question: "Có mấy hiện tượng tâm lý xã hội ảnh hưởng du khách?", options: ["A. 5.", "B. 6.", "C. 7.", "D. 8."], answer: "D" },
+            { question: "Hiện tượng tâm lý xã hội nào tạo nên tính dị biệt trong các sản phẩm du lịch?", options: ["A. Phong tục tập quán.", "B. Thị hiếu & mốt.", "C. Giai tầng xã hội.", "D. Tuổi tác."], answer: "A" },
+            { question: "Hiện tượng tâm lý xã hội nào tạo nên tính thời vụ trong du lịch?", options: ["A. Thị hiếu & mốt.", "B. Giai tầng xã hội.", "C. Phong tục tập quán.", "D. Tuổi tác."], answer: "A" },
+            { question: "Hiện tượng tâm lý xã hội nào tạo nên sản phẩm du lịch văn hóa đặc trưng từng dân tộc?", options: ["A. Giai tầng xã hội.", "B. Tuổi tác.", "C. Tôn giáo.", "D. Phong tục tập quán."], answer: "D" },
+            { question: "Thông tin nào là cần thiết trong giai đoạn mở đầu giao tiếp", options: ["A. Nắm vững thông tin về khách.", "B. Nắm vững thông tin về chính mình.", "C. Nắm vững thông tin về đối tác.", "D. Tất cả đều đúng."], answer: "D" },
+            { question: "Mục đích của giai đoạn mở đầu giao tiếp là", options: ["A. Tin tưởng.", "B. Thiện cảm.", "C. Tin yêu và thiện cảm.", "D. Tất cả đều sai."], answer: "C" },
+            { question: "Ấn tượng ban đầu xuất hiện trong giai đoạn nào của giao tiếp", options: ["A. Mở đầu.", "B. Diễn biến.", "C. Kết thúc.", "D. Giao tiếp."], answer: "A" },
+            { question: "Ấn tượng ban đầu là gì", options: ["A. Là biểu tượng của sự vật.", "B. Là hình ảnh của sự vật.", "C. Là hình ảnh của hiện tượng.", "D. Tất cả đều đúng."], answer: "D" },
+            { question: "HDV hẹn giờ đón khách lúc khởi hành nhưng xe đến muộn thì HDV gọi điện thoại nói gì với khách?", options: ["A. Xin lỗi khách.", "B. Xin lỗi khách và hẹn giờ mới.", "C. Báo khách chờ.", "D. Cả 3 đáp án đều sai."], answer: "B" },
+            { question: "HDV và xe đến đón khách, khách chê xe xấu, không hài lòng, HDV làm gì?", options: ["A. Giải thích về chất lượng xe.", "B. Đổi xe khác.", "C. Xin lỗi khách và làm mọi cách để khách hài lòng.", "D. A và C."], answer: "D" },
+            { question: "Khi đón khách lẻ, có cụ già cần đổi chỗ ngồi lên phía trước vì ghế cụ ở gần cuối xe. HDV làm gì?", options: ["A. Vận động các nhóm khách.", "B. Trả lời không thể đổi chỗ.", "C. Xin lỗi và không làm gì cả.", "D. Cả 3 đáp án đều sai."], answer: "A" },
+            { question: "Khi đến đón từng nhóm khách lẻ, HDV gặp khách và đón khách, điều gì hỏi khách cuối cùng khi cho xe lăn bánh?", options: ["A. Hỏi khách có mang đủ hành lý không.", "B. Hỏi khách có quên gì không.", "C. Hỏi khách có mang đủ giấy tờ không.", "D. Kể ra và hỏi khách có quên gì không."], answer: "D" },
+            { question: "Vết thương ở cùi chỏ, nếu dùng băng cuộn thì băng theo hình thức", options: ["A. băng xoắn ốc.", "B. băng số 8.", "C. băng rẻ quạt.", "D. băng vòng tròn."], answer: "C" },
+            { question: "Có bao nhiêu độ phỏng?", options: ["A. 2 độ phỏng.", "B. 3 độ phỏng.", "C. 4 độ phỏng.", "D. 5 độ phỏng."], answer: "B" },
+            { question: "Trong trường hợp nạn nhân bị tai nạn không còn tỉnh, không cử động, sự hô hấp bị ngưng phải thực hiện ngay việc", options: ["A. gọi trung tâm cấp cứu.", "B. đưa nạn nhân ra khỏi nơi nguy hiểm, làm thông đường hô hấp, làm hô hấp nhân tạo, báo trung tâm cấp cứu.", "C. làm hô hấp nhân tạo, đưa nạn nhân ra khỏi nơi nguy hiểm.", "D. báo trung tâm cấp cứu, làm hô hấp nhân tạo."], answer: "B" },
+            { question: "Quốc gia nào nổi tiếng với lễ hội ném cà chua Tomatina?", options: ["A. Bồ Đào Nha.", "B. Italia.", "C. Tây Ban Nha.", "D. Hy Lạp."], answer: "C" },
+            { question: "Lễ hội Holi Festival ở Ấn Độ còn có tên gọi khác là gì?", options: ["A. Lễ hội màu sắc.", "B. Lễ hội ánh sáng.", "C. Lễ hội hoa.", "D. Lễ hội nước."], answer: "A" },
+            { question: "Lễ trưởng thành ở?", options: ["A. Nhật Bản.", "B. Trung Quốc.", "C. Hàn Quốc.", "D. Thái Lan."], answer: "A" },
+            { question: "Hanbok là bộ trang phục truyền thống của quốc gia nào?", options: ["A. Nhật Bản.", "B. Trung Quốc.", "C. Hàn Quốc.", "D. Thái Lan."], answer: "C" },
+            { question: "Thị thực du lịch khi hết hạn", options: ["A. được xem xét gia hạn.", "B. được xem xét cấp thị thực mới.", "C. không được xem xét gia hạn.", "D. không được xem xét cấp thị thực mới."], answer: "B" },
+            { question: "Thị thực mang ký hiệu VR được cấp cho", options: ["A. Hành khách vào du lịch.", "B. Hành khách vào thăm thân nhân.", "C. Hành khách vào công tác.", "D. Cả 3 đáp án đều sai."], answer: "B" },
+            { question: "Hình thức của thị thực là", options: ["A. Thị thực được cấp riêng cho từng người, trừ trường hợp trẻ em dưới 9 tuổi được cấp chung với cha, mẹ, người giám hộ.", "B. Thị thực được cấp riêng cho từng người.", "C. Thị thực được cấp chung cho cả gia đình.", "D. Cả 3 đáp án đều sai."], answer: "A" },
+            { question: "Người nước ngoài là", options: ["A. Người mang giấy tờ xác định quốc tịch nước ngoài.", "B. Người không quốc tịch.", "C. Người nhập cảnh, xuất cảnh, quá cảnh, cư trú tại Việt Nam.", "D. Người mang giấy tờ xác định quốc tịch nước ngoài và người không quốc tịch nhập cảnh, xuất cảnh, quá cảnh, cư trú tại Việt Nam."], answer: "D" },
+            { question: "Mục đích của giai đoạn mở đầu giao tiếp là", options: ["A. Tin tưởng.", "B. Thiện cảm.", "C. Tin yêu và thiện cảm.", "D. Tất cả đều sai."], answer: "C" },
+            { question: "Đất nước của những nụ cười là nước", options: ["A. Việt Nam.", "B. Campuchia.", "C. Lào.", "D. Thái Lan."], answer: "D" },
+            { question: "Cách sắp xếp chỗ ngồi xung quanh bàn tiệc tròn với khách danh dự?", options: ["A. Xếp khách danh dự ngồi trước mặt ông chủ.", "B. Xếp khách danh dự ngồi bên phải ông chủ.", "C. Xếp khách danh dự ngồi bên trái ông chủ.", "D. Xếp khách danh dự ngồi đối diện ông chủ."], answer: "A" },
+            { question: "Tiệc đứng trong ngoại giao được phân chia thành mấy hình thức", options: ["A. Một hình thức.", "B. Hai hình thức.", "C. Ba hình thức.", "D. Bốn hình thức."], answer: "B" }
+        ];
+
+        let currentQuestionIndex = 0;
+        let shuffledQuestions = [];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                document.querySelector('.quiz-container').innerHTML = '<h2>Bạn đã hoàn thành bài kiểm tra!</h2>';
+                return;
+            }
+
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            document.querySelector('.question-counter').textContent = `Câu hỏi ${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
+            document.querySelector('.question-text').textContent = currentQuestion.question;
+
+            const optionsList = document.querySelector('.options');
+            optionsList.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const li = document.createElement('li');
+                li.innerHTML = `<label><input type="radio" name="answer">${option}</label>`;
+                li.onclick = () => checkAnswer(li, option.charAt(0));
+                optionsList.appendChild(li);
+            });
+            document.querySelector('.feedback').textContent = '';
+        }
+
+        function checkAnswer(selectedLi, selectedOption) {
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const feedbackElement = document.querySelector('.feedback');
+            
+            // Disable all options
+            const allOptions = document.querySelectorAll('.options li');
+            allOptions.forEach(li => li.onclick = null);
+
+            if (selectedOption === currentQuestion.answer) {
+                selectedLi.classList.add('correct');
+                feedbackElement.textContent = 'Chính xác! Chuyển sang câu hỏi tiếp theo...';
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 1000); // 1-second delay before moving to the next question
+            } else {
+                selectedLi.classList.add('incorrect');
+                feedbackElement.textContent = 'Sai rồi, hãy thử lại!';
+                
+                // Re-enable options for a new try
+                allOptions.forEach(li => {
+                    if (!li.classList.contains('incorrect')) {
+                        li.onclick = () => checkAnswer(li, li.textContent.trim().charAt(0));
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            shuffledQuestions = [...questions];
+            shuffle(shuffledQuestions);
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
